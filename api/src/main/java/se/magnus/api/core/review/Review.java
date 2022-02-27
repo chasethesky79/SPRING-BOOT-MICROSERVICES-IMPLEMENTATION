@@ -1,10 +1,12 @@
 package se.magnus.api.core.review;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Review {
     private int productId;
     private int reviewId;

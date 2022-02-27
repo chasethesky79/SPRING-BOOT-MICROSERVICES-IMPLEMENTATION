@@ -1,6 +1,5 @@
 package se.magnus.microservices.core.product.services;
 
-import jdk.internal.org.jline.utils.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,11 @@ public class ProductServiceImpl implements ProductService {
         if (productId == 13) {
             throw new NotFoundException(String.format("No product found for productId %s", productId));
         }
-        return new Product(productId, "name-"+ productId,123, serviceUtil.getServiceAddress());
+        return Product.builder()
+                .productId(productId)
+                .name("name-"+ productId)
+                .weight(123)
+                .serviceAddress(serviceUtil.getServiceAddress())
+                .build();
     }
 }
