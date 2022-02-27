@@ -24,7 +24,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProduct(int productId) {
-        Log.debug(String.format("/product return the product fpr id %s", productId));
+        LOG.debug(String.format("/product return the product fpr id %s", productId));
 
         if (productId < 1) {
             throw new InvalidInputException(String.format("Invalid product id, %s", productId));
