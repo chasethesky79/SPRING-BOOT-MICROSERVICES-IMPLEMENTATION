@@ -10,4 +10,8 @@ import lombok.NoArgsConstructor;
 public class InvalidInputException extends RuntimeException {
   private String message;
   private Throwable cause;
+
+  public InvalidInputException(final String message) {
+    this.message = message;
+  }
 }
