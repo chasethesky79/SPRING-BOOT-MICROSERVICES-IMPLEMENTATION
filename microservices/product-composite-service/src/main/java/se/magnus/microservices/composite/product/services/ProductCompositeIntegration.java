@@ -29,7 +29,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     private final String recommendationServiceUrl;
     private final String reviewServiceUrl;
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
     private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeIntegration.class);
 
 
@@ -43,7 +42,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
                                        @Value("${app.recommendation-service.host}") String recommendationServiceHost,
                                        @Value("${app.recommendation-service.port}") String recommendationServicePort) {
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
         this.productServiceUrl = "http://" + productServiceHost + ":" + productServicePort + "/product";
         this.reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort + "/review?productId=";
         this.recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort + "/recommendation?productId=";
