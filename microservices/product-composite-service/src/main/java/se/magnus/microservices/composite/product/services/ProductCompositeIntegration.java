@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.product.ProductService;
@@ -13,6 +16,9 @@ import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.recommendation.RecommendationService;
 import se.magnus.api.core.review.Review;
 import se.magnus.api.core.review.ReviewService;
+import se.magnus.util.exceptions.InvalidInputException;
+import se.magnus.util.exceptions.NotFoundException;
+
 import java.util.List;
 
 
@@ -45,16 +51,44 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Product getProduct(int productId) {
-        return null;
+        LOG.info("Calling getProduct API on URL: {}", productId);
+        final String productURL = String.format("%s/%s", productServiceUrl, productId);
+        try {
+            final Product product = restTemplate.getForObject(productURL, Product.class);
+            LOG.info("Found product: {}", product.getName());
+            return product;
+        } catch (HttpClientErrorException e) {
+            switch(e.getStatusCode()) {
+                case NOT_FOUND:
+                    throw new NotFoundException(e.getMessage());
+
+                case UNPROCESSABLE_ENTITY:
+                    throw new InvalidInputException(e.getMessage());
+
+                default:
+                    LOG.error("Got an unexpected error: {}", e.getStatusCode());
+                    throw e;
+            }
+        }
     }
 
     @Override
     public List<Recommendation> getRecommendations(int productId) {
-        return null;
+        LOG.info("Calling getRecommendations API on URL: {}", productId);
+        final String recommendationsURL = String.format("%s%s", recommendationServiceUrl, productId);
+        List<Recommendation> recommendations = restTemplate.exchange(recommendationsURL, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Recommendation>>() {}).getBody();
+        LOG.info("Found recommendations for product: {}", productId);
+        return recommendations;
     }
 
     @Override
     public List<Review> getReviews(int productId) {
-        return null;
+        LOG.info("Calling getReviews API on URL: {}", productId);
+        final String recommendationsURL = String.format("%s%s", reviewServiceUrl, productId);
+        final List<Review> reviews = restTemplate.exchange(recommendationsURL, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Review>>() {}).getBody();
+        LOG.info("Found reviews for product: {}", productId);
+        return reviews;
     }
 }
