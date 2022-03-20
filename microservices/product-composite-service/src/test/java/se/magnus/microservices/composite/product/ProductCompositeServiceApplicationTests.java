@@ -112,7 +112,20 @@ public class ProductCompositeServiceApplicationTests {
 			.expectStatus().isOk()
 			.expectBody()
 			.jsonPath("$.productId").isEqualTo(PRODUCT_ID_OK)
-			.jsonPath("$.recommendations.length()").isEqualTo(1)
-			.jsonPath("$.reviews.length()").isEqualTo(1);
+			.jsonPath("$.recommendations.length()").isEqualTo(3)
+			.jsonPath("$.reviews.length()").isEqualTo(3);
+	}
+
+	@Test
+	public void getProductNotFound() {
+		webTestClient
+				.get()
+				.uri("/product-composite/" + PRODUCT_ID_NOT_FOUND)
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isNotFound()
+				.expectBody()
+				.jsonPath("$.path").isEqualTo("/product-composite/" + PRODUCT_ID_NOT_FOUND)
+				.jsonPath("$.message").isEqualTo("NOT FOUND "+ PRODUCT_ID_NOT_FOUND);
 	}
 }
